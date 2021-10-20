@@ -20,11 +20,11 @@ public class CustomerService {
 
 
     public Flux<CustomerDTO> getAllCustomers(){
-        return customerRepository.findAll().map(AppUtils::entityToDTO);
+        return customerRepository.findAll().map(AppUtils::entityToDTO).log();
     }
 
     public Mono<CustomerDTO> getCustomerById(Integer id){
-        return customerRepository.findById(id).map(AppUtils::entityToDTO);
+        return customerRepository.findById(id).map(AppUtils::entityToDTO).log();
     }
     
     
@@ -42,7 +42,7 @@ public class CustomerService {
         .runOn(Schedulers.boundedElastic())
         .flatMap(id -> customerRepository.findById(id))
         .ordered((c1, c2) -> c2.getId() - c1.getId())
-        .map(AppUtils::entityToDTO);
+        .map(AppUtils::entityToDTO).log();
   
     }
 
@@ -51,7 +51,7 @@ public class CustomerService {
 
       return  customerDTOMono.map(AppUtils::dtoToEntity)
                 .flatMap(customerRepository::save)
-                .map(AppUtils::entityToDTO);
+                .map(AppUtils::entityToDTO).log();
     }
 
    public Mono<CustomerDTO> updateCustomer(Mono<CustomerDTO> customerDTOMono,Integer id){
@@ -59,7 +59,7 @@ public class CustomerService {
                 .flatMap(p->customerDTOMono.map(AppUtils::dtoToEntity)
                 .doOnNext(e->e.setId(id)))
                 .flatMap(customerRepository::save)
-                .map(AppUtils::entityToDTO);
+                .map(AppUtils::entityToDTO).log();
 
     }
   
@@ -78,7 +78,7 @@ public class CustomerService {
      }  */
 
     public Mono<Void> deleteCustomer(Integer id){
-        return customerRepository.deleteById(id);
+        return customerRepository.deleteById(id).log();
     }
 
 
