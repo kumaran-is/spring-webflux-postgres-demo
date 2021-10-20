@@ -9,8 +9,10 @@ import com.demo.utils.AppUtils;
 import com.demo.dto.CustomerDTO;
 import com.demo.model.Customer;
 import com.demo.repository.CustomerRepository;
+import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import org.springframework.http.HttpStatus;
 
 @Service
 public class CustomerService {
@@ -24,7 +26,9 @@ public class CustomerService {
     }
 
     public Mono<CustomerDTO> getCustomerById(Integer id){
-        return customerRepository.findById(id).map(AppUtils::entityToDTO).log();
+        return customerRepository.findById(id)
+    		.switchIfEmpty(monoResponseStatusNotFoundException())
+    		.map(AppUtils::entityToDTO).log();
     }
     
     
@@ -79,6 +83,10 @@ public class CustomerService {
 
     public Mono<Void> deleteCustomer(Integer id){
         return customerRepository.deleteById(id).log();
+    }
+    
+    private <T> Mono<T> monoResponseStatusNotFoundException(){
+        return Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND,"Customer not found"));
     }
 
 
