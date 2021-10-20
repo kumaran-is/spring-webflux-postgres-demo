@@ -23,3 +23,14 @@ CREATE TABLE IF NOT EXISTS public.customer
 
 ALTER TABLE public.customer
     OWNER to kumaraniyyasamysrinivasan;
+
+// or use below comments
+
+DROP TABLE IF EXISTS public.customer cascade;
+CREATE TABLE IF NOT EXISTS public.customer
+(
+    id SERIAL PRIMARY KEY,
+    dob date,
+    email character varying(255) COLLATE pg_catalog."default",
+    name character varying(255) COLLATE pg_catalog."default"
+);
