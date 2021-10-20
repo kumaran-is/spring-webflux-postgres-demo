@@ -1,5 +1,7 @@
 package com.demo.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.demo.dto.CustomerDTO;
@@ -29,6 +31,11 @@ public class CustomerController {
     	   .map((item) -> new ResponseEntity<>(item, HttpStatus.OK))
            .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+    
+    @GetMapping("/fetch/{customerIds}")
+    public Flux<CustomerDTO> getCustomerByIds(@PathVariable List<Integer> customerIds){
+        return customerService.getCustomerByIds(customerIds);
+    }
 
     @PostMapping
     public Mono<ResponseEntity<CustomerDTO>> createCustomer(@RequestBody Mono<CustomerDTO> customerDTO){
@@ -39,7 +46,8 @@ public class CustomerController {
     @PutMapping("/{id}")
     public Mono<ResponseEntity<CustomerDTO>> updateCustomer(@RequestBody Mono<CustomerDTO> customerDTO, @PathVariable Integer id){
         return customerService.updateCustomer(customerDTO, id)
-		.map((item) -> new ResponseEntity<>(item, HttpStatus.OK));
+		.map((item) -> new ResponseEntity<>(item, HttpStatus.OK))
+		.defaultIfEmpty(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
     }
 
     @DeleteMapping("/{id}")
