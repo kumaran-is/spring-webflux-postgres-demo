@@ -2,10 +2,8 @@ package com.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import com.demo.model.Customer;
-import com.demo.repository.CustomerRepository;
-
+import com.demo.dto.CustomerDTO;
+import com.demo.service.CustomerService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -14,36 +12,31 @@ import reactor.core.publisher.Mono;
 public class CustomerController {
 	
 	@Autowired
-    CustomerRepository customerRepository;
+	CustomerService customerService;
 
     @GetMapping
-    public Flux<Customer> getCustomers(){
-        return customerRepository.findAll();
+    public Flux<CustomerDTO> getCustomers(){
+        return customerService.getAllCustomers();
     }
 
     @GetMapping("/{id}")
-    public Mono<Customer> getCustomer(@PathVariable Integer id){
-        return customerRepository.findById(id);
+    public Mono<CustomerDTO> getCustomer(@PathVariable Integer id){
+        return customerService.getCustomerById(id);
     }
 
     @PostMapping
-    public Mono<Customer> createCustomer(@RequestBody Customer customer){
-       return  customerRepository.save(customer);
+    public Mono<CustomerDTO> createCustomer(@RequestBody Mono<CustomerDTO> customerDTO){
+       return  customerService.saveCustomer(customerDTO);
     }
 
     @PutMapping("/{id}")
-    public Mono<Customer> updateCustomer(@RequestBody Customer customer, @PathVariable Integer id){
-        return customerRepository.findById(id)
-                        .map((c) -> {
-                            c.setName(customer.getName());
-                            return c;
-                        }).flatMap( c -> customerRepository.save(c));
-
+    public Mono<CustomerDTO> updateCustomer(@RequestBody Mono<CustomerDTO> customerDTO, @PathVariable Integer id){
+        return customerService.updateCustomer(customerDTO, id);
     }
 
     @DeleteMapping("/{id}")
     public Mono<Void> deleteCustomer(@PathVariable Integer id){
-        return customerRepository.deleteById(id);
+        return customerService.deleteCustomer(id);
     }
 
 }
