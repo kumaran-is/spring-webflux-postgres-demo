@@ -22,13 +22,17 @@ public class CustomerService {
 
 
     public Flux<CustomerDTO> getAllCustomers(){
-        return customerRepository.findAll().map(AppUtils::entityToDTO).log();
+        return customerRepository.findAll()
+    	.switchIfEmpty(monoResponseStatusNotFoundException())
+    	.map(AppUtils::entityToDTO)
+    	.log();
     }
 
     public Mono<CustomerDTO> getCustomerById(Integer id){
         return customerRepository.findById(id)
-    		.switchIfEmpty(monoResponseStatusNotFoundException())
-    		.map(AppUtils::entityToDTO).log();
+		.switchIfEmpty(monoResponseStatusNotFoundException())
+		.map(AppUtils::entityToDTO)
+		.log();
     }
     
     
@@ -46,24 +50,28 @@ public class CustomerService {
         .runOn(Schedulers.boundedElastic())
         .flatMap(id -> customerRepository.findById(id))
         .ordered((c1, c2) -> c2.getId() - c1.getId())
-        .map(AppUtils::entityToDTO).log();
+        .map(AppUtils::entityToDTO)
+        .log();
   
     }
 
 
     public Mono<CustomerDTO> saveCustomer(Mono<CustomerDTO> customerDTOMono){
 
-      return  customerDTOMono.map(AppUtils::dtoToEntity)
-                .flatMap(customerRepository::save)
-                .map(AppUtils::entityToDTO).log();
+		return  customerDTOMono.map(AppUtils::dtoToEntity)
+		.flatMap(customerRepository::save)
+		.map(AppUtils::entityToDTO)
+		.log();
     }
 
    public Mono<CustomerDTO> updateCustomer(Mono<CustomerDTO> customerDTOMono,Integer id){
-       return customerRepository.findById(id)
-                .flatMap(p->customerDTOMono.map(AppUtils::dtoToEntity)
-                .doOnNext(e->e.setId(id)))
-                .flatMap(customerRepository::save)
-                .map(AppUtils::entityToDTO).log();
+		return customerRepository.findById(id)
+		.switchIfEmpty(monoResponseStatusNotFoundException())
+		.flatMap(p->customerDTOMono.map(AppUtils::dtoToEntity)
+		.doOnNext(e->e.setId(id)))
+		.flatMap(customerRepository::save)
+		.map(AppUtils::entityToDTO)
+		.log();
 
     }
   
@@ -82,7 +90,8 @@ public class CustomerService {
      }  */
 
     public Mono<Void> deleteCustomer(Integer id){
-        return customerRepository.deleteById(id).log();
+        return customerRepository.deleteById(id)
+        .log();
     }
     
     private <T> Mono<T> monoResponseStatusNotFoundException(){
