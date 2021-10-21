@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.scheduler.Schedulers;
 import com.demo.utils.AppUtils;
 import com.demo.dto.CustomerDTO;
-import com.demo.model.Customer;
 import com.demo.repository.CustomerRepository;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
