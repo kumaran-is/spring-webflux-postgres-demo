@@ -9,17 +9,19 @@ import com.demo.service.CustomerService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 @RestController
-@RequestMapping("/api/v1/customers")
+// @RequestMapping("/api/v1/customers")
+@RequestMapping(value = "/api/v1/customers", produces = MediaType.APPLICATION_NDJSON_VALUE)
 public class CustomerController {
 	
 	@Autowired
 	CustomerService customerService;
 	
 	//@GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-	//@GetMapping(produces = MediaType.APPLICATION_STREAM_JSON_VALUE)
+	//@GetMapping(produces = MediaType.APPLICATION_NDJSON_VALUE)
     @GetMapping
     public Flux<CustomerDTO> getCustomers(){
         return customerService.getAllCustomers();
