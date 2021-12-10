@@ -11,6 +11,8 @@ import com.demo.repository.CustomerRepository;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
+
 import org.springframework.http.HttpStatus;
 
 @Service
@@ -18,6 +20,9 @@ public class CustomerService {
 	
 	@Autowired
     private CustomerRepository customerRepository;
+	
+	@Autowired
+	private Sinks.Many<CustomerDTO> sink;
 
 
     public Flux<CustomerDTO> getAllCustomers(){
@@ -60,6 +65,7 @@ public class CustomerService {
 		return  customerDTOMono.map(AppUtils::dtoToEntity)
 		.flatMap(customerRepository::save)
 		.map(AppUtils::entityToDTO)
+		.doOnNext(this.sink::tryEmitNext)  // SSE
 		.log();
     }
 

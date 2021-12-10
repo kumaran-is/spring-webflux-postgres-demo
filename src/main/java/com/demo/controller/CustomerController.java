@@ -20,11 +20,20 @@ public class CustomerController {
 	@Autowired
 	CustomerService customerService;
 	
+	@Autowired
+	Flux<CustomerDTO> flux;
+	
 	//@GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	//@GetMapping(produces = MediaType.APPLICATION_NDJSON_VALUE)
     @GetMapping
     public Flux<CustomerDTO> getCustomers(){
         return customerService.getAllCustomers();
+    }
+    
+	// @GetMapping(value= "stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+	@GetMapping(value= "stream", produces = MediaType.APPLICATION_NDJSON_VALUE)
+    public Flux<CustomerDTO> getCustomerStream(){
+        return this.flux;
     }
 
     @GetMapping("/{id}")
